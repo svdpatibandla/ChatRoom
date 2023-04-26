@@ -53,15 +53,7 @@ function MessageForm() {
         <>
             <div className="messages-output">
                 {user && !privateMemberMsg?._id && <div className="alert alert-info">You are in the {currentRoom} room</div>}
-                {user && privateMemberMsg?._id && (
-                    <>
-                        <div className="alert alert-info conversation-info">
-                            <div>
-                                Your conversation with {privateMemberMsg.name} <img src={privateMemberMsg.picture} className="conversation-profile-pic" />
-                            </div>
-                        </div>
-                    </>
-                )}
+                {user && privateMemberMsg?._id && <div className="alert alert-info">Your conversation with {privateMemberMsg.name} </div>}
                 {!user && <div className="alert alert-danger">Please login</div>}
 
                 {user &&
@@ -92,7 +84,7 @@ function MessageForm() {
                         </Form.Group>
                     </Col>
                     <Col md={1}>
-                        <Button variant="primary" type="submit" style={{ width: "100%", backgroundColor: "orange" }} disabled={!user}>
+                        <Button variant="primary" type="submit" style={{ width: "100%", backgroundColor: "green" }} disabled={!user}>
                             <i className="fas fa-paper-plane"></i>
                         </Button>
                     </Col>

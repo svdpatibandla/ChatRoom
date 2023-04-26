@@ -74,6 +74,7 @@ function Sidebar() {
                     </ListGroup.Item>
                 ))}
             </ListGroup>
+            <br></br>
             <h2>Members</h2>
             {members.map((member) => (
                 <ListGroup.Item key={member.id} style={{ cursor: "pointer" }} active={privateMemberMsg?._id == member?._id} onClick={() => handlePrivateMemberMsg(member)} disabled={member._id === user._id}>

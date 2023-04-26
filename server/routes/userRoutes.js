@@ -4,9 +4,9 @@ const User = require('../models/User');
 // creating user
 router.post('/', async(req, res)=> {
   try {
-    const {name, email, password, picture} = req.body;
+    const {name, email, password} = req.body;
     console.log(req.body);
-    const user = await User.create({name, email, password, picture});
+    const user = await User.create({name, email, password});
     res.status(201).json(user);
   } catch (e) {
     let msg;

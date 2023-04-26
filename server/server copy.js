@@ -3,8 +3,11 @@ const app = express();
 const userRoutes = require('./routes/userRoutes')
 const User = require('./models/User');
 const Message = require('./models/Message')
-const rooms = ['CMPE-272', 'CMPE-273', 'CMPE-255', 'CMPE-206'];
+const rooms = ['general', 'tech', 'finance', 'crypto'];
 const cors = require('cors');
+
+const redis = require('redis');
+const redisClient = redis.createClient();
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
@@ -21,7 +24,6 @@ const io = require('socket.io')(server, {
     methods: ['GET', 'POST']
   }
 })
-
 
 async function getLastMessagesFromRoom(room){
   let roomMessages = await Message.aggregate([
@@ -50,6 +52,9 @@ io.on('connection', (socket)=> {
   socket.on('new-user', async ()=> {
     const members = await User.find();
     io.emit('new-user', members)
+
+    // add user to Redis
+    redisClient.add('users', JSON.stringify(members));
   })
 
   socket.on('join-room', async(newRoom, previousRoom)=> {
@@ -58,15 +63,28 @@ io.on('connection', (socket)=> {
     let roomMessages = await getLastMessagesFromRoom(newRoom);
     roomMessages = sortRoomMessagesByDate(roomMessages);
     socket.emit('room-messages', roomMessages)
+
+    // get room messages from Redis
+    redisClient.get(newRoom, (err, messages) => {
+      if (err) throw err;
+      if (messages !== null) {
+        roomMessages = JSON.parse(messages);
+        io.to(newRoom).emit('room-messages', roomMessages);
+      }
+    });
   })
 
   socket.on('message-room', async(room, content, sender, time, date) => {
     const newMessage = await Message.create({content, from: sender, time, date, to: room});
     let roomMessages = await getLastMessagesFromRoom(room);
     roomMessages = sortRoomMessagesByDate(roomMessages);
-    // sending message to room
     io.to(room).emit('room-messages', roomMessages);
     socket.broadcast.emit('notifications', room)
+
+    // save room messages to Redis
+    redisClient.set(room, JSON.stringify(roomMessages), (err, reply) => {
+      if (err) throw err;
+    });
   })
 
   app.delete('/logout', async(req, res)=> {
@@ -78,14 +96,15 @@ io.on('connection', (socket)=> {
       await user.save();
       const members = await User.find();
       socket.broadcast.emit('new-user', members);
+
+      // update users in Redis
+      redisClient.sadd('users', JSON.stringify(members));
       res.status(200).send();
-    } 
-    catch (e) {
-      console.log(e);
+    } catch (e) {
+      console.log
       res.status(400).send()
     }
   })
-
 })
 
 
