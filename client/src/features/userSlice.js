@@ -1,9 +1,12 @@
+// import createSlice function from redux toolkit and appApi
 import { createSlice } from "@reduxjs/toolkit";
 import appApi from "../services/appApi";
 
+// create userSlice
 export const userSlice = createSlice({
     name: "user",
     initialState: null,
+    // create reducers to handle user's new notifications and to reset notifications
     reducers: {
         addNotifications: (state, { payload }) => {
             if (state.newMessages[payload]) {
@@ -16,16 +19,14 @@ export const userSlice = createSlice({
             delete state.newMessages[payload];
         },
     },
-
+    // add extraReducers to save user after signup, login, and to logout
     extraReducers: (builder) => {
-        // save user after signup
         builder.addMatcher(appApi.endpoints.signupUser.matchFulfilled, (state, { payload }) => payload);
-        // save user after login
         builder.addMatcher(appApi.endpoints.loginUser.matchFulfilled, (state, { payload }) => payload);
-        // logout: destroy user session
         builder.addMatcher(appApi.endpoints.logoutUser.matchFulfilled, () => null);
     },
 });
 
+// export addNotifications and resetNotifications actions along with userSlice reducer
 export const { addNotifications, resetNotifications } = userSlice.actions;
 export default userSlice.reducer;

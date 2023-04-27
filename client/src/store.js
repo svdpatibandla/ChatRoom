@@ -1,34 +1,33 @@
+// import necessary modules
 import { configureStore } from "@reduxjs/toolkit";
 import userSlice from "./features/userSlice";
 import appApi from "./services/appApi";
-
-// persist our store
 import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
 import { persistReducer } from "redux-persist";
 import thunk from "redux-thunk";
 
-// reducers
+// combine reducers
 const reducer = combineReducers({
-    user: userSlice,
-    [appApi.reducerPath]: appApi.reducer,
+  user: userSlice,
+  [appApi.reducerPath]: appApi.reducer,
 });
 
+// configure redux-persist settings
 const persistConfig = {
-    key: "root",
-    storage,
-    blackList: [appApi.reducerPath],
+  key: "root",
+  storage,
+  blackList: [appApi.reducerPath],
 };
 
-// persist our store
-
+// persist the store using redux-persist
 const persistedReducer = persistReducer(persistConfig, reducer);
 
-// creating the store
-
+// create the store with persistedReducer and necessary middleware
 const store = configureStore({
-    reducer: persistedReducer,
-    middleware: [thunk, appApi.middleware],
+  reducer: persistedReducer,
+  middleware: [thunk, appApi.middleware],
 });
 
+// export the store
 export default store;

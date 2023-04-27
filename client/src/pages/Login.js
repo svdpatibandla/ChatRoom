@@ -1,29 +1,43 @@
+// Import required dependencies from external libraries
 import React, { useContext, useState } from "react";
 import { Col, Container, Form, Row, Button, Spinner } from "react-bootstrap";
 import { useLoginUserMutation } from "../services/appApi";
 import { Link, useNavigate } from "react-router-dom";
-//import "./Login.css";
+
+// Import context
 import { AppContext } from "../context/appContext";
 
+// Define Login component
 function Login() {
+
+    // Set initial state using useState hooks
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    
+    // Use navigate hook for programmatic navigation
     const navigate = useNavigate();
+
+    // Access global context object
     const { socket } = useContext(AppContext);
+
+    // Use custom mutation hook to handle user login
     const [loginUser, { isLoading, error }] = useLoginUserMutation();
+
+    // Define function to handle login event
     function handleLogin(e) {
         e.preventDefault();
-        // login logic
+        // Send login request to server using custom hook
         loginUser({ email, password }).then(({ data }) => {
             if (data) {
-                // socket work
+                // If login successful, emit "new-user" event to server
                 socket.emit("new-user");
-                // navigate to the chat
+                // Navigate to chat page
                 navigate("/chat");
             }
         });
     }
 
+    // Render login form
     return (
         <Container>
             <Row>
@@ -55,4 +69,5 @@ function Login() {
     );
 }
 
+// Export Login component as the default module
 export default Login;

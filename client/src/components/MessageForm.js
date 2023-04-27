@@ -1,17 +1,30 @@
+// Import required libraries and components
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { AppContext } from "../context/appContext";
 import "./MessageForm.css";
+
+// Define the main component
 function MessageForm() {
+    // Set initial state for message input
     const [message, setMessage] = useState("");
+
+    // Get user from the store
     const user = useSelector((state) => state.user);
+
+    // Get the socket, current room, and messages from the context
     const { socket, currentRoom, setMessages, messages, privateMemberMsg } = useContext(AppContext);
+
+    // Create a ref to the bottom of the messages div
     const messageEndRef = useRef(null);
+
+    // Scroll to the bottom of the messages div when new messages are added
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
+    // Format the current date for display
     function getFormattedDate() {
         const date = new Date();
         const year = date.getFullYear();
@@ -25,20 +38,17 @@ function MessageForm() {
         return month + "/" + day + "/" + year;
     }
 
-    function handleSubmit(e) {
-        e.preventDefault();
-    }
-
+    // Scroll to the bottom of the messages div
     function scrollToBottom() {
         messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
 
-    const todayDate = getFormattedDate();
-
+    // Get messages for the current room from the server
     socket.off("room-messages").on("room-messages", (roomMessages) => {
         setMessages(roomMessages);
     });
 
+    // Handle form submission
     function handleSubmit(e) {
         e.preventDefault();
         if (!message) return;
@@ -46,9 +56,10 @@ function MessageForm() {
         const minutes = today.getMinutes() < 10 ? "0" + today.getMinutes() : today.getMinutes();
         const time = today.getHours() + ":" + minutes;
         const roomId = currentRoom;
-        socket.emit("message-room", roomId, message, user, time, todayDate);
+        socket.emit("message-room", roomId, message, user, time, getFormattedDate());
         setMessage("");
     }
+    
     return (
         <>
             <div className="messages-output">

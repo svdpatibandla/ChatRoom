@@ -9,8 +9,10 @@ import { PersistGate } from "redux-persist/integration/react";
 import persistStore from "redux-persist/es/persistStore";
 import store from "./store";
 
+// Create a persisted version of the store using the `persistStore` function
 const persistedStore = persistStore(store);
 
+// Render the application wrapped in a Redux store provider and a persisted gate
 ReactDOM.render(
     <React.StrictMode>
         <Provider store={store}>
@@ -22,7 +24,5 @@ ReactDOM.render(
     document.getElementById("root")
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+// Log performance metrics to the console
 reportWebVitals();

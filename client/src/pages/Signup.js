@@ -2,22 +2,27 @@ import React, { useState } from "react";
 import { Col, Container, Form, Row, Button } from "react-bootstrap";
 import { useSignupUserMutation } from "../services/appApi";
 import { Link, useNavigate } from "react-router-dom";
-//  import "./Signup.css";
-import botImg from "../assets/bot.jpeg";
 
 function Signup() {
+    // set initial states for email, password, and name fields
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
-    const [signupUser, { isLoading, error }] = useSignupUserMutation();
+
+    // call useSignupUserMutation hook to create a new user
+    const [signupUser, { error }] = useSignupUserMutation();
+
+    // call useNavigate hook to redirect to another page
     const navigate = useNavigate();
 
     async function handleSignup(e) {
         e.preventDefault();
+
         // signup the user
         signupUser({ name, email, password }).then(({ data }) => {
             if (data) {
                 console.log(data);
+                // redirect to chat page
                 navigate("/chat");
             }
         });
@@ -29,6 +34,7 @@ function Signup() {
                 <Col md={7} className="d-flex align-items-center justify-content-center flex-direction-column">
                     <Form style={{ width: "80%", maxWidth: 500 }} onSubmit={handleSignup}>
                         <h1 className="text-center">Create account</h1>
+                        // show an error message if there is any
                         {error && <p className="alert alert-danger">{error.data}</p>}
                         <Form.Group className="mb-3" controlId="formBasicName">
                             <Form.Label>Name</Form.Label>
