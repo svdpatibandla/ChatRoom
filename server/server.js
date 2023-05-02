@@ -13,6 +13,10 @@ app.use(cors());
 app.use('/users', userRoutes)
 require('./connection')
 
+app.get('/', (req,res)=>{
+	res.send('Hello World');
+})
+
 const server = require('http').createServer(app);
 const PORT = 5001;
 const io = require('socket.io')(server, {
