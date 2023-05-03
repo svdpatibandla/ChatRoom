@@ -5,7 +5,7 @@ const User = require('../models/User');
 router.post('/', async(req, res)=> {
   try {
     const {name, email, password} = req.body;
-    console.log(req.body);
+    console.log('Creating user:', req.body);
     const user = await User.create({name, email, password});
     res.status(201).json(user);
   } catch (e) {
@@ -25,6 +25,7 @@ router.post('/', async(req, res)=> {
 router.post('/login', async(req, res)=> {
   try {
     const {email, password} = req.body;
+    console.log('Login attempt:', email, password);
     const user = await User.findByCredentials(email, password);
     user.status = 'online';
     await user.save();
@@ -36,3 +37,5 @@ router.post('/login', async(req, res)=> {
 
 
 module.exports = router
+
+
